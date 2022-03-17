@@ -1,24 +1,22 @@
 #include <Arduino.h>
-#include <Wire.h>
+#include <PN532.h>
+#define SPI_MODE
+
+#ifdef SPI_MODE
 #include <SPI.h>
-#include <Adafruit_PN532.h>
-
-#define PN532_SCK (5)
-#define PN532_MOSI (7)
-#define PN532_SS (8)
-#define PN532_MISO (6)
-
-#define PN532_IRQ (2)
-#define PN532_RESET (3) // Not connected by default on the NFC Shield
-
-// Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
-Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);
+#include <PN532_SPI.h>
+PN532_SPI pn532spi(SPI, D0);
+PN532 nfc(pn532spi);
+#else
+#include <Wire.h>
+#include <PN532_I2C.h>
+PN532_I2C pn532_i2c(Wire);
+PN532 nfc(pn532_i2c);
+#endif
 
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial)
-    delay(10); // for Leonardo/Micro/Zero
 
   Serial.println("Hello!");
 
